@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class PertamaPage extends StatefulWidget {
   const PertamaPage({super.key});
@@ -10,8 +11,38 @@ class PertamaPage extends StatefulWidget {
 }
 
 class _PertamaPageState extends State<PertamaPage> {
-  DateTime? dateTimenow, dateTimeTomorrow;
+  DateTime? dateTimenow = DateTime.now(), dateTimeTomorrow, picked_date;
   var year, month, day;
+  TimeOfDay? picked_time, selectedTime = TimeOfDay.now();
+
+  Future<Null> getDate(BuildContext context) async {
+    picked_date = await showDatePicker(
+        context: context,
+        initialDate: dateTimenow!,
+        firstDate: DateTime(dateTimenow!.year - 1),
+        lastDate: DateTime(dateTimenow!.year + 1));
+
+    if (picked_date != null && picked_date != dateTimenow) {
+      setState(() {
+        dateTimenow = picked_date;
+      });
+    }
+  }
+
+  Future<Null> getTime(BuildContext context) async {
+    picked_time = await showTimePicker(
+      context: context,
+      initialTime: selectedTime!,
+    );
+    log(picked_time.toString());
+
+    if (picked_time != null && picked_time != selectedTime) {
+      setState(() {
+        selectedTime = picked_time;
+        log("test" + picked_time.toString());
+      });
+    }
+  }
 
   void dateTime_method() {
     dateTimenow = new DateTime.now();
@@ -45,18 +76,18 @@ class _PertamaPageState extends State<PertamaPage> {
         children: <Widget>[
           MaterialButton(
             onPressed: () {
-              null;
+              getDate(context);
             },
             child: Text("Test DatePicker"),
           ),
           MaterialButton(
             onPressed: () {
-              dateTime_method();
+              getTime(context);
             },
             child: Text("Test TimePicker"),
           ),
-          Text("Date"),
-          Text("Time"),
+          Text("${dateTimenow.toString().substring(0, 10)}"),
+          Text("${selectedTime.toString().substring(10, 15)}"),
         ],
       ),
     );
